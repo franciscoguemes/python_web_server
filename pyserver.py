@@ -7,16 +7,143 @@
 import tkinter
 from tkinter import filedialog
 import subprocess
-import os
+import threading
+import sys
+import asyncio
+import time
+import queue
+
 
 # Default port to initialize the server...
-from subprocess import Popen
-
 DEFAULT_PORT = 8000
 
 DEFAULT_DIRECTORY = '/home/francisco/Pictures'
 
 web_server_process = None
+thread_event_handler = None
+loop = None
+
+
+class AsynchronousFileReader(threading.Thread):
+    """
+    Helper class to implement asynchronous reading of a file
+    in a separate thread. Pushes read lines on a queue to
+    be consumed in another thread.
+    """
+    def __init__(self, fd, que):
+        assert isinstance(que, queue.Queue)
+        assert callable(fd.readline)
+        threading.Thread.__init__(self)
+        self._fd = fd
+        self._que = que
+
+    def run(self):
+        """ The body of the tread: read lines and put them on the queue."""
+        for line in iter(self._fd.readline, b''):
+            if line != b'':
+                self._que.put(line)
+
+    def eof(self):
+        """Check whether there is no more content to expect."""
+        return not self.is_alive() and self._que.empty()
+
+
+# def read_stdout(child_process):
+#     while child_process.poll() is None:
+#         out_stdout = child_process.stdout.readline()
+#         #print("I am in stdout")
+#         if out_stdout != b'':
+#             #print(out_stdout.decode(sys.stdout.encoding))
+#             sys.stdout.write(out_stdout.decode(sys.stdout.encoding))
+#             sys.stdout.flush()
+
+
+# def read_stderr(child_process):
+#     while child_process.poll() is None:
+#         out_stderr = child_process.stderr.readline()
+#         #print("I am in stderr")
+#         if out_stderr != b'':
+#             #print(out_stderr.decode(sys.stderr.encoding))
+#             sys.stdout.write(out_stderr.decode(sys.stderr.encoding))
+#             sys.stdout.flush()
+
+
+# def execute_server(port, directory):
+#     global web_server_process
+#     web_server_process = subprocess.Popen(['python3', '-m', 'http.server', str(port)],
+#                              stdin=None,
+#                              stdout=subprocess.PIPE,
+#                              stderr=subprocess.PIPE,
+#                              close_fds=True)
+#     print(web_server_process.pid)
+#     thread_read_stdout = threading.Thread(target=read_stdout, args=(web_server_process,))
+#     thread_read_stderr = threading.Thread(target=read_stderr, args=(web_server_process,))
+#     thread_read_stdout.start()
+#     thread_read_stderr.start()
+#     print("After starting the threads")
+#     # global loop
+#     # loop = asyncio.get_event_loop()
+#     # loop.call_soon(_stream_subprocess(['python3', '-m', 'http.server', str(port)], print_stdout, print_stderr))
+#     # loop.run_forever()
+#     thread_read_stdout.join()
+#     thread_read_stderr.join()
+#     print("After joining")
+
+
+def execute_server(port, directory):
+    global web_server_process
+    # The -u parameter is needed in order the http.server to not buffer the output: https://stackoverflow.com/a/43250818/1866109
+    command = ['python3', '-u', '-m', 'http.server', str(port)]
+    #cmd = "ping -c4 www.franciscoguemes.com && sleep 1 && echo this would be an error! 1>&2 "
+    #command = ["bash", "-c", cmd]
+    web_server_process = subprocess.Popen(command,
+                             stdin=None,
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE,
+                             close_fds=True)
+
+    # Launch the asynchronous readers of the process' stdout and stderr.
+    stdout_queue = queue.Queue()
+    stdout_reader = AsynchronousFileReader(web_server_process.stdout, stdout_queue)
+    stdout_reader.start()
+    stderr_queue = queue.Queue()
+    stderr_reader = AsynchronousFileReader(web_server_process.stderr, stderr_queue)
+    stderr_reader.start()
+
+    print("Before the loop")
+    # Check the queues if we received some output (until there is nothing more to get).
+    while not stdout_reader.eof() or not stderr_reader.eof():
+        # Show what we received from standard output.
+        while not stdout_queue.empty():
+            line = stdout_queue.get()
+            if line != b'':
+                print(line.decode(sys.stdout.encoding), flush=True)
+                #sys.stdout.write(line.decode(sys.stdout.encoding))
+                #sys.stdout.flush()
+
+        # Show what we received from standard error.
+        while not stderr_queue.empty():
+            line = stderr_queue.get()
+            if line != b'':
+                print(line.decode(sys.stderr.encoding), flush=True)
+                #sys.stdout.write(line.decode(sys.stderr.encoding))
+                #sys.stdout.flush()
+
+        # Sleep a bit before asking the readers again.
+        time.sleep(.1)
+
+    print("Before join")
+    # Let's be tidy and join the threads we've started.
+    stdout_reader.join()
+    stderr_reader.join()
+
+
+def print_stdout(line):
+    print(f"STDOUT:{line}")
+
+
+def print_stderr(line):
+    print(f"STDERR:{line}")
 
 
 def select_directory():
@@ -33,10 +160,10 @@ def get_selected_port():
 
 def start_server():
     global web_server_process
-    #Update start_button...
+    # Update start_button...
     start_button_text.set("Stop Web Server")
     start_button.configure(command=stop_server)
-    #Gather the information...
+    # Gather the information...
     directory = directory_entry.get()
     port = get_selected_port()
     print(f"python3 -m http.server {port} --directory {directory}")
@@ -44,18 +171,34 @@ def start_server():
     subprocess.run(["cd", directory], shell=True, check=True)
     # Start the web server...   --> https://stackoverflow.com/questions/3516007/run-process-and-dont-wait
     #                           --> https://www.cyberciti.biz/faq/python-execute-unix-linux-command-examples/
-    web_server_process = subprocess.Popen(['python3', '-m', 'http.server', str(port)],
-                             stdin=None,
-                             stdout=None,
-                             stderr=None,
-                             close_fds=True)
-    print(web_server_process.pid)
+    #                           --> https://www.aeracode.org/2018/02/19/python-async-simplified/
+
+    # web_server_process = subprocess.Popen(['python3', '-m', 'http.server', str(port)],
+    #                          stdin=None,
+    #                          stdout=None,
+    #                          stderr=None,
+    #                          close_fds=True)
+    # print(web_server_process.pid)
+
+    global thread_event_handler
+    thread_event_handler = threading.Thread(target=execute_server, args=(port, directory))
+    thread_event_handler.start()
 
 
 def stop_server():
+    # loop.stop()
+    # loop.close()
     start_button_text.set("Start Web Server")
     start_button.configure(command=start_server)
-    web_server_process.terminate()
+
+    # https://www.reddit.com/r/learnpython/comments/52scfk/what_is_the_difference_between_popens_terminate/d7mx12b/
+    web_server_process.kill()
+    # https://askubuntu.com/a/427222/227301
+    web_server_process.wait()
+
+    # Close subprocess' file descriptors.
+    web_server_process.stdout.close()
+    web_server_process.stderr.close()
 
 
 window = tkinter.Tk()
@@ -118,3 +261,6 @@ scrollbar.pack(side=tkinter.RIGHT, fill=tkinter.Y)
 # console_text.config(state='disabled')
 
 window.mainloop()
+
+
+
