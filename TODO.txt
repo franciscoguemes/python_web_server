@@ -1,11 +1,26 @@
+NOTE: The best version is the pyserver2.py
 
-
+pyserver.py
 1-Make the server to start in the specified directory
     1.1-Execute multiple Linux commands in the same subprocess
 2-Show the server output in the UI
     2.1- Bind the subprocess stdout to the UI
 3-Show a scrollbar for the server output in the UI
 DONE --> 4-Make functional the choose directory button
+5-Show a list with the ports that are not in use when the port button is clicked
+6-Handle errors (Python exceptions) for the port number input in case of:
+    6.1-The input is not a number
+    6.2-The input is a negative number
+    6.3-The input is a number higher than 65535 --> https://stackoverflow.com/questions/113224/what-is-the-largest-tcp-ip-network-port-number-allowable-for-ipv4
+
+
+pyserver2.py
+1-Cleanup the code
+    1.1- Delete commented code
+    1.2- Add proper comments
+2-Disable the standard output if no option is given in the parameters
+3-Syntax highlighting in case stderr, show the messages in Red
+4-
 5-Show a list with the ports that are not in use when the port button is clicked
 6-Handle errors (Python exceptions) for the port number input in case of:
     6.1-The input is not a number
