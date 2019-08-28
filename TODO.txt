@@ -20,7 +20,7 @@ pyserver2.py
     1.2- Add proper comments
 2-Disable the standard output if no option is given in the parameters
 3-Syntax highlighting in case stderr, show the messages in Red
-4-
+4-Horizontal scrollbar
 5-Show a list with the ports that are not in use when the port button is clicked
 6-Handle errors (Python exceptions) for the port number input in case of:
     6.1-The input is not a number
