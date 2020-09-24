@@ -33,3 +33,5 @@ pyserver2.py
         2.3.2- Syntax highlighting in case stderr, show the messages in Red
 3-Disable the standard output if no option is given in the parameters
 
+4-Show a nice icon in the docking (like any other application that is running)
+

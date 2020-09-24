@@ -176,9 +176,11 @@ port_label = tkinter.Label(window, anchor='w', justify='left', bd=4, text='Port:
 port_label.place(x=88, y=83, width=50, height=14)
 
 selected_radio_button = tkinter.IntVar()
-radio_8000 = tkinter.Radiobutton(window, text=str(DEFAULT_PORT), anchor="w", variable=selected_radio_button, value=1, command=lambda: activate_port_selection_widgets(False))
+radio_8000 = tkinter.Radiobutton(window, text=str(DEFAULT_PORT), anchor="w", variable=selected_radio_button, value=1,
+                                 command=lambda: activate_port_selection_widgets(False))
 radio_8000.place(x=162, y=83, width=70, height=14)
-radio_port = tkinter.Radiobutton(window, text="", anchor="w", variable=selected_radio_button, value=2, command=lambda: activate_port_selection_widgets(True))
+radio_port = tkinter.Radiobutton(window, text="", anchor="w", variable=selected_radio_button, value=2,
+                                 command=lambda: activate_port_selection_widgets(True))
 radio_port.place(x=162, y=120, width=70, height=14)
 selected_radio_button.set(1)
 
