@@ -24,7 +24,7 @@ class ProgressBarWindow(Toplevel):
         self.__add_components()
 
         # TODO: Change this, go for the approach of creating a class for the thread...
-        # http: // blog.acipo.com / python - threading - progress - indicators /
+        # http://blog.acipo.com/python-threading-progress-indicators/
         # http://softwareramblings.com/2008/06/running-functions-as-threads-in-python.html
         # https://www.geeksforgeeks.org/python-different-ways-to-kill-a-thread/
         # https://realpython.com/intro-to-python-threading/#starting-a-thread
