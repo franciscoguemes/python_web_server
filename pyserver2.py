@@ -13,12 +13,16 @@ import asyncio
 import time
 import queue
 import os
+import socket
 
 
 # Default port to initialize the server...
 DEFAULT_PORT = 8000
 
 DEFAULT_DIRECTORY = '/home/francisco/Pictures'
+
+DEFAULT_SERVER = 'localhost' \
+
 
 web_server_process = None
 thread_event_handler = None
@@ -28,10 +32,10 @@ loop = None
 def read_stdout(child_process, call_back):
     while child_process.poll() is None:
         out_stdout = child_process.stdout.readline()
-        #print("I am in stdout")
+        # print("I am in stdout")
         if out_stdout != b'':
             call_back(out_stdout, True)
-            #print(out_stdout.decode(sys.stdout.encoding))
+            # print(out_stdout.decode(sys.stdout.encoding))
             sys.stdout.write(out_stdout.decode(sys.stdout.encoding))
             sys.stdout.flush()
 
@@ -39,10 +43,10 @@ def read_stdout(child_process, call_back):
 def read_stderr(child_process, call_back):
     while child_process.poll() is None:
         out_stderr = child_process.stderr.readline()
-        #print("I am in stderr")
+        # print("I am in stderr")
         if out_stderr != b'':
             call_back(out_stderr, False)
-            #print(out_stderr.decode(sys.stderr.encoding))
+            # print(out_stderr.decode(sys.stderr.encoding))
             sys.stdout.write(out_stderr.decode(sys.stderr.encoding))
             sys.stdout.flush()
 
@@ -104,6 +108,51 @@ def activate_port_selection_widgets(activate=True):
     else:
         port_entry.configure(state="disabled")
         port_button.configure(state="disabled")
+
+
+def get_opened_ports():
+    list_of_ports = ""
+    for port in range(1, 65535):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        result = sock.connect_ex((DEFAULT_SERVER, port))
+        if result == 0:
+            list_of_ports += "Port {: >5}: 	 Open\n".format(port)
+        sock.close()
+    return list_of_ports;
+
+
+def show_opened_ports():
+    # TODO: Show a progressbar
+    # https://stackoverflow.com/questions/7310511/how-to-create-downloading-progress-bar-in-ttk
+
+    ports_window = tkinter.Toplevel(window)
+    ports_window.geometry("500x300")
+    ports_window.resizable(0, 0)
+    ports_window.title("Ports in use")
+    scrollbar = tkinter.Scrollbar(ports_window)
+    textarea = tkinter.Text(ports_window, height=3, width=50)
+    # scrollbar.pack()
+
+    # TODO: Use a thread here while the port scan is taking place...
+    ports_in_use = get_opened_ports()
+    # quote = """HAMLET: To be, or not to be--that is the question:
+    # Whether 'tis nobler in the mind to suffer
+    # The slings and arrows of outrageous fortune
+    # Or to take arms against a sea of troubles
+    # And by opposing end them. To die, to sleep--
+    # No more--and by a sleep to say we end
+    # The heartache, and the thousand natural shocks
+    # That flesh is heir to. 'Tis a consummation
+    # Devoutly to be wished."""
+
+    # TODO: Add here the widgets to show the ports in use...
+    # https://www.python-course.eu/tkinter_text_widget.php
+    scrollbar.pack(side=tkinter.RIGHT, fill=tkinter.Y)
+    textarea.pack(side=tkinter.LEFT, fill=tkinter.Y)
+    scrollbar.config(command=textarea.yview)
+    textarea.config(yscrollcommand=scrollbar.set)
+    textarea.insert(tkinter.END, ports_in_use)
+    textarea.configure(state="disabled")
 
 
 def get_selected_port():
@@ -184,10 +233,10 @@ radio_port = tkinter.Radiobutton(window, text="", anchor="w", variable=selected_
 radio_port.place(x=162, y=120, width=70, height=14)
 selected_radio_button.set(1)
 
-port_entry = tkinter.Entry(window)
+port_entry = tkinter.Entry(window, state='disabled')
 port_entry.place(x=184, y=115, width=71, height=21)
 
-port_button = tkinter.Button(window, text="...")
+port_button = tkinter.Button(window, text="Scan ports", state='disabled', command=show_opened_ports)
 port_button.place(x=266, y=113, width=90, height=24)
 
 start_button_text = tkinter.StringVar()
