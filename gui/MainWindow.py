@@ -86,7 +86,6 @@ class MainWindow(Frame):
     def __show_opened_ports(self):
 
         # TODO: Create here a separate thread that will show the progressbar and then the ports window
-
         progressbar_window = ProgressBarWindow(self)
         #ports_window = PortsWindow(self)
 
