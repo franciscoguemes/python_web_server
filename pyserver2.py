@@ -5,6 +5,7 @@
 # therefore I have used the place method with absolute coordinates to place the widgets in the UI.
 
 import tkinter
+from tkinter import ttk
 from tkinter import filedialog
 import subprocess
 import threading
@@ -90,7 +91,7 @@ def show_text(line, is_stdout):
     if is_stdout is True:
         console_text.insert(tkinter.END, line)
     else:
-        # TODO: Add here your sytax higlighter for stderr
+        # TODO: Add here your syntax higlighter for stderr
         console_text.insert(tkinter.END, line)
 
     console_text.config(state='disabled')
@@ -122,13 +123,18 @@ def get_opened_ports():
 
 
 def show_opened_ports():
-    # TODO: Show a progressbar
-    # https://stackoverflow.com/questions/7310511/how-to-create-downloading-progress-bar-in-ttk
-
     ports_window = tkinter.Toplevel(window)
     ports_window.geometry("500x300")
     ports_window.resizable(0, 0)
     ports_window.title("Ports in use")
+
+    # TODO: Show a progressbar
+    # https://stackoverflow.com/questions/7310511/how-to-create-downloading-progress-bar-in-ttk
+    # https://www.programiz.com/python-programming/time/sleep#:~:text=time.-,sleep()%20in%20multithreaded%20programs,whole%20process%20in%20multithreaded%20programs.
+    progressbar = ttk.Progressbar(ports_window, orient="horizontal", length=200, mode="indeterminate")
+    progressbar.pack(side=tkinter.TOP)
+    time.sleep(2)
+
     scrollbar = tkinter.Scrollbar(ports_window)
     textarea = tkinter.Text(ports_window, height=3, width=50)
     # scrollbar.pack()
