@@ -1,9 +1,10 @@
-#!/usr/bin/env python3
-
 import tkinter
 from tkinter import Frame
 from tkinter import ttk
 from tkinter import filedialog
+
+from gui.PortsWindow import PortsWindow
+from gui.ProgressBarWindow import ProgressBarWindow
 
 
 class MainWindow(Frame):
@@ -70,6 +71,10 @@ class MainWindow(Frame):
         self.__port_button = tkinter.Button(self, text="Scan ports", state='disabled', command=self.__show_opened_ports)
         self.__port_button.place(x=266, y=113, width=90, height=24)
 
+        # TODO: Delete this 2 lines after development...
+        self.__selected_radio_button.set(2)
+        self.__activate_port_selection_widgets(True)
+
     def __activate_port_selection_widgets(self, activate=True):
         if activate:
             self.__port_entry.configure(state="normal")
@@ -79,8 +84,14 @@ class MainWindow(Frame):
             self.__port_button.configure(state="disabled")
 
     def __show_opened_ports(self):
-        pass
-        # ports_window = tkinter.Toplevel(window)
+
+        # TODO: Create here a separate thread that will show the progressbar and then the ports window
+
+        progressbar_window = ProgressBarWindow(self)
+        #ports_window = PortsWindow(self)
+
+
+        # ports_window = tkinter.Toplevel(self.master)
         # ports_window.geometry("500x300")
         # ports_window.resizable(0, 0)
         # ports_window.title("Ports in use")
@@ -116,8 +127,6 @@ class MainWindow(Frame):
         # textarea.config(yscrollcommand=scrollbar.set)
         # textarea.insert(tkinter.END, ports_in_use)
         # textarea.configure(state="disabled")
-
-
 
     def __add_server_components(self):
         pass
