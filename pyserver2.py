@@ -99,7 +99,12 @@ def show_text(line, is_stdout):
 
 def select_directory():
     directory = filedialog.askdirectory()
-    directory_text.set(directory)
+    #print(type(directory))
+    #print(directory)
+    if not directory:
+        directory_text.set(DEFAULT_DIRECTORY)
+    else:
+        directory_text.set(directory)
 
 
 def activate_port_selection_widgets(activate=True):
