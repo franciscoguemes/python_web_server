@@ -25,15 +25,18 @@ class PortScanner:
     #         sock.close()
     #     return list_of_ports;
 
+    def is_scan_finished(self):
+        return self.__index == self.RANGE_END
+
     def get_progress(self):
         return (100 * self.__index) / (1.0 * self.RANGE_END - self.RANGE_START)
 
     def scan(self):
         self.__opened_ports.clear()
         self.__index = 0
-        for port in range(self.RANGE_START, self.RANGE_END):
+        for port in range(self.RANGE_START, self.RANGE_END+1):
             self.__index = port
-            print(f"Scanning port {port}...")
+            # print(f"Scanning port {port}...")
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             result = sock.connect_ex((self.DEFAULT_SERVER, port))
             if result == 0:
