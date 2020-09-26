@@ -132,7 +132,8 @@ class MainWindow(Frame):
         scrollbar.pack(side=tkinter.RIGHT, fill=tkinter.Y)
 
     def __start_server(self):
-        global web_server_process
+        #global web_server_process
+
         # Update start_button...
         self.__start_button_text.set("Stop Web Server")
         self.__start_button.configure(command=self.__stop_server)
@@ -153,9 +154,9 @@ class MainWindow(Frame):
         #                          close_fds=True)
         # print(web_server_process.pid)
 
-        global thread_event_handler
-        thread_event_handler = threading.Thread(target=self.__execute_server, args=(port, directory))
-        thread_event_handler.start()
+        # global thread_event_handler
+        self.__thread_event_handler = threading.Thread(target=self.__execute_server, args=(port, directory))
+        self.__thread_event_handler.start()
 
     def __get_selected_port(self):
         if self.__selected_radio_button.get() == 1:
@@ -170,31 +171,31 @@ class MainWindow(Frame):
         self.__start_button.configure(command=self.__start_server)
 
         # https://www.reddit.com/r/learnpython/comments/52scfk/what_is_the_difference_between_popens_terminate/d7mx12b/
-        web_server_process.kill()
+        self.__web_server_process.kill()
         # https://askubuntu.com/a/427222/227301
-        web_server_process.wait()
+        self.__web_server_process.wait()
 
         # Close subprocess' file descriptors.
-        web_server_process.stdout.close()
-        web_server_process.stderr.close()
+        self.__web_server_process.stdout.close()
+        self.__web_server_process.stderr.close()
 
     def __execute_server(self, port, directory):
-        global web_server_process
+        # global web_server_process
         # Change to the http path to serve: https://stackoverflow.com/a/39801780/1866109
         web_dir = os.path.join(directory)
         os.chdir(web_dir)
         # Start the server...
         # The -u parameter is needed in order the http.server to not buffer the output: https://stackoverflow.com/a/43250818/1866109
         command = ['python3', '-u', '-m', 'http.server', str(port)]
-        web_server_process = subprocess.Popen(command,
+        self.__web_server_process = subprocess.Popen(command,
                                               stdin=None,
                                               stdout=subprocess.PIPE,
                                               stderr=subprocess.PIPE,
                                               close_fds=True)
-        print(web_server_process.pid)
+        print(self.__web_server_process.pid)
         # Start the threads that reads from the pipes...
-        thread_read_stdout = threading.Thread(target=self.__read_stdout, args=(web_server_process, self.__show_text))
-        thread_read_stderr = threading.Thread(target=self.__read_stderr, args=(web_server_process, self.__show_text))
+        thread_read_stdout = threading.Thread(target=self.__read_stdout, args=(self.__web_server_process, self.__show_text))
+        thread_read_stderr = threading.Thread(target=self.__read_stderr, args=(self.__web_server_process, self.__show_text))
         thread_read_stdout.start()
         thread_read_stderr.start()
         print("After starting the threads")
