@@ -132,43 +132,57 @@ class MainWindow(Frame):
         scrollbar.pack(side=tkinter.RIGHT, fill=tkinter.Y)
 
     def __start_server(self):
-        #global web_server_process
-
         # Update start_button...
         self.__start_button_text.set("Stop Web Server")
         self.__start_button.configure(command=self.__stop_server)
-        # Gather the information...
-        directory = self.__directory_entry.get()
-        port = self.__get_selected_port()
-        print(f"python3 -m http.server {port} --directory {directory}")
-        # Change to the directory...
-        subprocess.run(["cd", directory], shell=True, check=True)
-        # Start the web server...   --> https://stackoverflow.com/questions/3516007/run-process-and-dont-wait
-        #                           --> https://www.cyberciti.biz/faq/python-execute-unix-linux-command-examples/
-        #                           --> https://www.aeracode.org/2018/02/19/python-async-simplified/
 
-        # web_server_process = subprocess.Popen(['python3', '-m', 'http.server', str(port)],
-        #                          stdin=None,
-        #                          stdout=None,
-        #                          stderr=None,
-        #                          close_fds=True)
-        # print(web_server_process.pid)
+        try:
+            # Gather the information...
+            directory = self.__directory_entry.get()
+            port = self.__get_selected_port()
+            print(f"python3 -m http.server {port} --directory {directory}")
+            # Change to the directory...
+            subprocess.run(["cd", directory], shell=True, check=True)
+            # Start the web server...   --> https://stackoverflow.com/questions/3516007/run-process-and-dont-wait
+            #                           --> https://www.cyberciti.biz/faq/python-execute-unix-linux-command-examples/
+            #                           --> https://www.aeracode.org/2018/02/19/python-async-simplified/
 
-        # global thread_event_handler
-        self.__thread_event_handler = threading.Thread(target=self.__execute_server, args=(port, directory))
-        self.__thread_event_handler.start()
+            # web_server_process = subprocess.Popen(['python3', '-m', 'http.server', str(port)],
+            #                          stdin=None,
+            #                          stdout=None,
+            #                          stderr=None,
+            #                          close_fds=True)
+            # print(web_server_process.pid)
+
+            # global thread_event_handler
+            self.__thread_event_handler = threading.Thread(target=self.__execute_server, args=(port, directory))
+            self.__thread_event_handler.start()
+        except ValueError as e:
+            tkinter.messagebox.showerror(title="Error processing the port", message=e)
+            self.__reset_start_button()
 
     def __get_selected_port(self):
         if self.__selected_radio_button.get() == 1:
             return self.DEFAULT_PORT
-        else:  # TODO: Improve the conversion, handle errors...
-            return int(self.__port_entry.get())
+        else:  # Port introduced by the user...
+            port = self.__port_entry.get()
+            if not port.isnumeric():
+                raise ValueError("The port number must be a number")
 
-    def __stop_server(self):
-        # loop.stop()
-        # loop.close()
+            port = int(port)
+            if port < PortScanner.RANGE_START:
+                raise ValueError("The port number must be a positive integer")
+            if port > PortScanner.RANGE_END:
+                raise ValueError(f"The port number can not be higher than {PortScanner.RANGE_END}")
+
+            return port
+
+    def __reset_start_button(self):
         self.__start_button_text.set("Start Web Server")
         self.__start_button.configure(command=self.__start_server)
+
+    def __stop_server(self):
+        self.__reset_start_button()
 
         # https://www.reddit.com/r/learnpython/comments/52scfk/what_is_the_difference_between_popens_terminate/d7mx12b/
         self.__web_server_process.kill()
@@ -180,7 +194,6 @@ class MainWindow(Frame):
         self.__web_server_process.stderr.close()
 
     def __execute_server(self, port, directory):
-        # global web_server_process
         # Change to the http path to serve: https://stackoverflow.com/a/39801780/1866109
         web_dir = os.path.join(directory)
         os.chdir(web_dir)
@@ -234,8 +247,8 @@ class MainWindow(Frame):
 
         self.__console_text.config(state='disabled')
 
-    def print_stdout(line):
-        print(f"STDOUT:{line}")
-
-    def print_stderr(line):
-        print(f"STDERR:{line}")
+    # def print_stdout(line):
+    #     print(f"STDOUT:{line}")
+    #
+    # def print_stderr(line):
+    #     print(f"STDERR:{line}")
