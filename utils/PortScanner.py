@@ -14,6 +14,7 @@ class PortScanner:
     def __init__(self):
         self.__opened_ports = []
         self.__index = 0
+        self.__cancelled = False
 
     # def get_opened_ports(self):
     #     list_of_ports = ""
@@ -26,7 +27,20 @@ class PortScanner:
     #     return list_of_ports;
 
     def is_scan_finished(self):
-        return self.__index == self.RANGE_END
+        """The scan is finished either because it terminated (in a natural way) or because it was cancelled (abnormal
+        termination)
+        :return:
+        True if the scan finished. False otherwise
+        """
+        return self.__index == self.RANGE_END or self.is_scan_cancelled()
+
+    def is_scan_cancelled(self):
+        """
+        Tells whether the scan was cancelled or not.
+        :return:
+        True if hte scan was cancelled. False otherwise
+        """
+        return self.__cancelled
 
     def get_progress(self):
         return (100 * self.__index) / (1.0 * self.RANGE_END - self.RANGE_START)
@@ -35,6 +49,8 @@ class PortScanner:
         self.__opened_ports.clear()
         self.__index = 0
         for port in range(self.RANGE_START, self.RANGE_END+1):
+            if self.is_scan_cancelled():
+                break
             self.__index = port
             # print(f"Scanning port {port}...")
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -43,6 +59,13 @@ class PortScanner:
                 self.__opened_ports.append(port)
             sock.close()
         return self.__opened_ports.copy();
+
+    def cancel_scan(self):
+        """
+        Cancels the scan. This provokes that the scan is immediately stop.
+        :return:
+        """
+        self.__cancelled = True
 
     def get_opened_ports(self):
         return self.__opened_ports.copy();
