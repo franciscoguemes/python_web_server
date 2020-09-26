@@ -129,6 +129,8 @@ class MainWindow(Frame):
         self.__console_text.place(x=45, y=212, width=648, height=317)
         scrollbar = tkinter.Scrollbar(self.__console_text, command=self.__console_text.yview)
         self.__console_text.config(yscrollcommand=scrollbar.set)
+        self.__console_text.tag_config("error", foreground="red")
+        # self.__console_text.tag_configure("error", foreground="red")
         scrollbar.pack(side=tkinter.RIGHT, fill=tkinter.Y)
 
     def __start_server(self):
@@ -238,14 +240,18 @@ class MainWindow(Frame):
 
     def __show_text(self, line, is_stdout):
         self.__console_text.config(state='normal')
-
+        # index = self.__console_text.index(tkinter.END)
+        # print(index)
         if is_stdout is True:
             self.__console_text.insert(tkinter.END, line)
-        else:
+            # self.__console_text.tag_remove("error", index, tkinter.END)
+        else:  # is stderr
             # TODO: Add here your syntax higlighter for stderr
             self.__console_text.insert(tkinter.END, line)
+            self.__console_text.tag_add("error", "1.0", tkinter.END)
+            # self.__console_text.tag_add("error", index, tkinter.END)
 
-        self.__console_text.config(state='disabled')
+        #self.__console_text.config(state='disabled')
 
     # def print_stdout(line):
     #     print(f"STDOUT:{line}")
