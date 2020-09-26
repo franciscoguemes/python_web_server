@@ -20,33 +20,6 @@ class ProgressBarWindow(Toplevel):
         self.__add_components()
         print("After adding components...")
 
-        # TODO: Change this, go for the approach of creating a class for the thread...
-        # http://blog.acipo.com/python-threading-progress-indicators/
-        # http://softwareramblings.com/2008/06/running-functions-as-threads-in-python.html
-        # https://www.geeksforgeeks.org/python-different-ways-to-kill-a-thread/
-        # https://realpython.com/intro-to-python-threading/#starting-a-thread
-
-        # self.__opened_ports = None
-        # port_scanner = PortScanner()
-        # thread = threading.Thread(target=port_scanner.scan)
-        # print("Before thread start")
-        # thread.start()
-        # print("After thread start")
-        # while not port_scanner.is_scan_finished():
-        #     print("Checking thread is alive...")
-        #     # Get thread progress
-        #     progress = port_scanner.get_progress()
-        #     # Set progress in the bar...
-        #     self.__progressbar['value'] = progress
-        #     # sleep
-        #     time.sleep(0.1)
-        #
-        # print("Before thread...")
-        # thread.join()
-        # print("After thread join...")
-        #
-        # print("At the very end...")
-
     def __add_components(self):
         self.__progressbar = ttk.Progressbar(self, orient="horizontal", length=self.DEFAULT_WIDTH, mode="determinate")
         self.__progressbar.place(x=25, y=25, width=200, height=20)

@@ -34,3 +34,36 @@ pyserver01.py
 3-Disable the standard output if no option is given in the parameters
 4-Show a nice icon in the docking (like any other application that is running)
 
+
+pyserver02.py
+    X- Takeaways
+        X- Write code example on how to build a window with Tkinter
+        X- Write code example on how to build a window with Tkinter inheriting from Frame
+        X- Write code example on how to open a new window from another window using Toplevel (ProgressBarWindow, PortsWindow)
+        X- Write code example on how to close a window / Frame / Toplevel
+            https://stackoverflow.com/questions/54245012/how-to-only-close-toplevel-window-in-python-tkinter
+        X- Example of a Frame with a Text box (PortsWindow)
+            https://www.python-course.eu/tkinter_text_widget.php
+        X- Write code example on how to create a messagebox
+        X- Write an example on how to detach a heavy task from the Tkinter single-threaded event model
+            http://zetcode.com/articles/tkinterlongruntask/
+            https://realpython.com/intro-to-python-threading/#what-is-a-thread
+            http://blog.acipo.com/python-multi-threading/
+            https://code.activestate.com/recipes/580754-long-processing-computation-in-tkinter-or-long-run/
+            https://stackoverflow.com/questions/323972/is-there-any-way-to-kill-a-thread#:~:text=In%20Python%2C%20you%20simply%20cannot,yourProcess.
+            https://www.geeksforgeeks.org/python-different-ways-to-kill-a-thread/
+        X- Write an example of a progressbar (How to notify the progress)
+            http://blog.acipo.com/python-threading-progress-indicators/
+        X- Write an example of a progressbar with a heavy task on the background (background process)
+
+
+
+    def __do_something(self):
+        x=0
+        while x < 10:
+            x += 1
+            print(f"x=={x}")
+            time.sleep(1)
+
+ def __show_opened_ports(self):
+        #thread = threading.Thread(target=self.__do_something)

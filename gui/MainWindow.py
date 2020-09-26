@@ -87,36 +87,36 @@ class MainWindow(Frame):
             self.__port_button.configure(state="disabled")
 
     def __show_opened_ports(self):
-        # TODO: Create here a separate thread that will show the progressbar and then the ports window
+        # Create here a separate thread that will show the progressbar and then the ports window
+        thread = threading.Thread(target=self.__show_progressbar, daemon=True)
+        thread.start()
+
+    def __show_progressbar(self):
         progressbar_window = ProgressBarWindow(self)
 
-        # TODO: Have a look at this article about heavy tasks in Tkinter
-        # http://zetcode.com/articles/tkinterlongruntask/
-        # https://code.activestate.com/recipes/580754-long-processing-computation-in-tkinter-or-long-run/
+        port_scanner = PortScanner()
+        thread = threading.Thread(target=port_scanner.scan)
+        print("Before thread start")
+        thread.start()
+        print("After thread start")
+        while not port_scanner.is_scan_finished():
+            # Get thread progress
+            progress = port_scanner.get_progress()
+            print(f"progress={progress}")
+            # Set progress in the bar...
+            progressbar_window.set_progress(progress)
+            # sleep
+            time.sleep(0.1)
 
-        # port_scanner = PortScanner()
-        # thread = threading.Thread(target=port_scanner.scan)
-        # print("Before thread start")
-        # thread.start()
-        # print("After thread start")
-        # while not port_scanner.is_scan_finished():
-        #     print("Checking thread is alive...")
-        #     # Get thread progress
-        #     progress = port_scanner.get_progress()
-        #     print(f"progress={progress}")
-        #     # Set progress in the bar...
-        #     progressbar_window.set_progress(progress)
-        #     # sleep
-        #     time.sleep(0.1)
-        #
-        # progressbar_window.set_progress(100)
-        # print("Before thread join...")
-        # thread.join()
-        # print("After thread join...")
-        #
-        # print("At the very end...")
+        progressbar_window.set_progress(100)
+        thread.join()
 
-        # ports_window = PortsWindow(self)
+        progressbar_window.destroy()
+        progressbar_window.update()
+        report = port_scanner.get_report()
+
+        # Show the ports window
+        ports_window = PortsWindow(self, report)
 
     def __add_server_components(self):
         pass
