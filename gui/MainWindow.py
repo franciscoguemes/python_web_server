@@ -1,3 +1,5 @@
+import threading
+import time
 import tkinter
 from tkinter import Frame
 from tkinter import ttk
@@ -5,6 +7,7 @@ from tkinter import filedialog
 
 from gui.PortsWindow import PortsWindow
 from gui.ProgressBarWindow import ProgressBarWindow
+from utils.PortScanner import PortScanner
 
 
 class MainWindow(Frame):
@@ -84,48 +87,36 @@ class MainWindow(Frame):
             self.__port_button.configure(state="disabled")
 
     def __show_opened_ports(self):
-
         # TODO: Create here a separate thread that will show the progressbar and then the ports window
         progressbar_window = ProgressBarWindow(self)
-        #ports_window = PortsWindow(self)
 
+        # TODO: Have a look at this article about heavy tasks in Tkinter
+        # http://zetcode.com/articles/tkinterlongruntask/
+        # https://code.activestate.com/recipes/580754-long-processing-computation-in-tkinter-or-long-run/
 
-        # ports_window = tkinter.Toplevel(self.master)
-        # ports_window.geometry("500x300")
-        # ports_window.resizable(0, 0)
-        # ports_window.title("Ports in use")
+        # port_scanner = PortScanner()
+        # thread = threading.Thread(target=port_scanner.scan)
+        # print("Before thread start")
+        # thread.start()
+        # print("After thread start")
+        # while not port_scanner.is_scan_finished():
+        #     print("Checking thread is alive...")
+        #     # Get thread progress
+        #     progress = port_scanner.get_progress()
+        #     print(f"progress={progress}")
+        #     # Set progress in the bar...
+        #     progressbar_window.set_progress(progress)
+        #     # sleep
+        #     time.sleep(0.1)
         #
-        # # TODO: Show a progressbar
-        # # https://stackoverflow.com/questions/7310511/how-to-create-downloading-progress-bar-in-ttk
-        # # https://www.programiz.com/python-programming/time/sleep#:~:text=time.-,sleep()%20in%20multithreaded%20programs,whole%20process%20in%20multithreaded%20programs.
-        # progressbar = ttk.Progressbar(ports_window, orient="horizontal", length=200, mode="indeterminate")
-        # progressbar.pack(side=tkinter.TOP)
-        # time.sleep(2)
+        # progressbar_window.set_progress(100)
+        # print("Before thread join...")
+        # thread.join()
+        # print("After thread join...")
         #
-        # scrollbar = tkinter.Scrollbar(ports_window)
-        # textarea = tkinter.Text(ports_window, height=3, width=50)
-        # # scrollbar.pack()
-        #
-        # # TODO: Use a thread here while the port scan is taking place...
-        # ports_in_use = get_opened_ports()
-        # # quote = """HAMLET: To be, or not to be--that is the question:
-        # # Whether 'tis nobler in the mind to suffer
-        # # The slings and arrows of outrageous fortune
-        # # Or to take arms against a sea of troubles
-        # # And by opposing end them. To die, to sleep--
-        # # No more--and by a sleep to say we end
-        # # The heartache, and the thousand natural shocks
-        # # That flesh is heir to. 'Tis a consummation
-        # # Devoutly to be wished."""
-        #
-        # # TODO: Add here the widgets to show the ports in use...
-        # # https://www.python-course.eu/tkinter_text_widget.php
-        # scrollbar.pack(side=tkinter.RIGHT, fill=tkinter.Y)
-        # textarea.pack(side=tkinter.LEFT, fill=tkinter.Y)
-        # scrollbar.config(command=textarea.yview)
-        # textarea.config(yscrollcommand=scrollbar.set)
-        # textarea.insert(tkinter.END, ports_in_use)
-        # textarea.configure(state="disabled")
+        # print("At the very end...")
+
+        # ports_window = PortsWindow(self)
 
     def __add_server_components(self):
         pass
