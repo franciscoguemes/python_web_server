@@ -92,31 +92,22 @@ class MainWindow(Frame):
         thread.start()
 
     def __show_progressbar(self):
-        progressbar_window = ProgressBarWindow(self)
-
         port_scanner = PortScanner()
+        progressbar_window = ProgressBarWindow(self, port_scanner)
         thread = threading.Thread(target=port_scanner.scan)
-        print("Before thread start")
         thread.start()
-        print("After thread start")
         while not port_scanner.is_scan_finished():
-            # Get thread progress
             progress = port_scanner.get_progress()
-            print(f"progress={progress}")
-            # Set progress in the bar...
+            # print(f"progress={progress}")
             progressbar_window.set_progress(progress)
-            # sleep
             time.sleep(0.1)
 
-        progressbar_window.set_progress(100)
-        thread.join()
-
-        progressbar_window.destroy()
-        progressbar_window.update()
-        report = port_scanner.get_report()
-
-        # Show the ports window
-        ports_window = PortsWindow(self, report)
+        if not port_scanner.is_scan_cancelled():
+            progressbar_window.set_progress(100)
+            thread.join()
+            progressbar_window.close_window()
+            report = port_scanner.get_report()
+            ports_window = PortsWindow(self, report)
 
     def __add_server_components(self):
         pass
