@@ -12,8 +12,9 @@ class ProgressBarWindow(Toplevel):
     DEFAULT_HEIGHT = 100
     DEFAULT_WIDTH = 250
 
-    def __init__(self, master):
+    def __init__(self, master, port_scaner):
         self.__master = master
+        self.__port_scaner = port_scaner
         Toplevel.__init__(self, master, height=self.DEFAULT_HEIGHT, width=self.DEFAULT_WIDTH)
         self.resizable(0,0)
         self.title("Scanning opened ports...")
@@ -29,11 +30,12 @@ class ProgressBarWindow(Toplevel):
         self.__port_button.place(x=25, y=60, width=90, height=24)
 
     def __cancel_scan(self):
-        # TODO: Delete this message once the functionality is working
-        messagebox.showwarning("Cancel scan", "Scan cancelled")
+        self.__port_scaner.cancel_scan()
+        self.close_window()
 
     def set_progress(self, progress):
         self.__progressbar['value'] = progress
 
-    # def get_opened_ports(self):
-    #     return self.__opened_ports
+    def close_window(self):
+        self.destroy()
+        self.update()
