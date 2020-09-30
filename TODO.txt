@@ -40,15 +40,7 @@ pyserver02.py
     1.1- Delete commented code
     1.2- Add proper comments
 2-Finish the UI
-    2.3- Text area:
-        2.3.1- Horizontal scrollbar
-        2.3.2- Syntax highlighting in case stderr, show the messages in Red
-            https://tkdocs.com/tutorial/text.html#tags
-            https://stackoverflow.com/questions/14786507/how-to-change-the-color-of-certain-words-in-the-tkinter-text-widget
-            https://stackoverflow.com/questions/3781670/how-to-highlight-text-in-a-tkinter-text-widget
-            https://stackoverflow.com/questions/14824163/how-to-get-the-input-from-the-tkinter-text-widget
-            https://stackoverflow.com/questions/4609382/getting-the-total-number-of-lines-in-a-tkinter-text-widget
-            https://stackoverflow.com/questions/29688831/pygments-syntax-highlighter-in-python-tkinter-text-widget
+
 3-Disable the standard output if no option is given in the parameters
 4-Show a nice icon in the docking (like any other application that is running)
     4.1- Give credit for the icon somehow. Icon downloaded from: https://www.flaticon.com/free-icon/server-cloud_31988
