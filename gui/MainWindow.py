@@ -186,16 +186,22 @@ class MainWindow(Frame):
             self.__start_button.configure(command=self.__stop_server)
 
     def __get_local_ip_address(self):
-        hostname = socket.gethostname()
-        ip_address = socket.gethostbyname(hostname)
+        localhost_ip = "127.0.0.1"
 
-        if ip_address == "127.0.0.1" or ip_address == "127.0.1.1":
-            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            s.connect(("8.8.8.8", 80))
-            ip_address = s.getsockname()[0]
-            s.close()
+        ip_address = None
+        try:
+            hostname = socket.gethostname()
+            ip_address = socket.gethostbyname(hostname)
 
-        return ip_address
+            if ip_address == localhost_ip or ip_address == "127.0.1.1":
+                s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                s.connect(("8.8.8.8", 80))
+                ip_address = s.getsockname()[0]
+                s.close()
+        except (socket.error, socket.herror, socket.gaierror, socket.timeout):
+            ip_address = localhost_ip
+        finally:
+            return ip_address
 
     def __insert_text(self, text):
         self.__console_text.config(state='normal')
