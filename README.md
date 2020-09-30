@@ -36,6 +36,8 @@ Then enter in the directory _python_web_server_ and execute the file _pyserver.p
 $ ./pyserver.py
 ```
 
+To see the UI mockup design open the file _python_web_server.epgz_ with tha applicaiton [Pencil](https://pencil.evolus.vn/)
+
 ### Prerequisites
 
 You need to have installed Python v3.6.9 or superior
