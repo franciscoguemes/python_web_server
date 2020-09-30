@@ -48,8 +48,6 @@ class MainWindow(Frame):
 
     def __select_directory(self):
         directory = filedialog.askdirectory()
-        #print(type(directory))
-        #print(directory)
         if not directory:
             self.__directory_text.set(self.DEFAULT_DIRECTORY)
         else:
@@ -79,10 +77,6 @@ class MainWindow(Frame):
         self.__port_button = tkinter.Button(self, text="Scan ports", state='disabled', command=self.__show_opened_ports)
         self.__port_button.place(x=266, y=113, width=90, height=24)
 
-        # TODO: Delete this 2 lines after development...
-        self.__selected_radio_button.set(2)
-        self.__activate_port_selection_widgets(True)
-
     def __activate_port_selection_widgets(self, activate=True):
         if activate:
             self.__port_entry.configure(state="normal")
@@ -103,7 +97,6 @@ class MainWindow(Frame):
         thread.start()
         while not port_scanner.is_scan_finished():
             progress = port_scanner.get_progress()
-            # print(f"progress={progress}")
             progressbar_window.set_progress(progress)
             time.sleep(0.1)
 
@@ -120,16 +113,10 @@ class MainWindow(Frame):
         self.__start_button = tkinter.Button(self, textvariable=self.__start_button_text, command=self.__start_server)
         self.__start_button.place(x=250, y=169, width=168, height=24)
 
-        # output = tkinter.StringVar()
-        # output.set('Console for showing HTTP server output...')
-        # console_label = tkinter.Label(window,  anchor='nw', justify='left', bg='white', textvariable=output)
-        # console_label.place(x=45, y=212, width=648, height=317)
-
         self.__console_text = tkinter.Text(self, bg='white', state='disabled', wrap='none')
         self.__console_text.place(x=45, y=212, width=648, height=317)
         self.__console_text.tag_config("error", foreground="red")
         self.__console_text.tag_configure("error", foreground="red")
-        # self.__console_text.tag_configure("highlightline", background='yellow', font='helvetica 14 bold', relief='raised')
 
         # Create scrollbars for the Text...
         scrollbar_x = tkinter.Scrollbar(self.__console_text, command=self.__console_text.xview, orient=tkinter.HORIZONTAL)
@@ -139,31 +126,22 @@ class MainWindow(Frame):
         scrollbar_y.pack(side=tkinter.RIGHT, fill=tkinter.Y)
         self.__console_text.config(yscrollcommand=scrollbar_y.set)
 
-
     def __start_server(self):
         # Update start_button...
-        self.__start_button_text.set("Stop Web Server")
-        self.__start_button.configure(command=self.__stop_server)
+        self.__reset_start_button_to_start_mode(False)
 
         try:
             # Gather the information...
             directory = self.__directory_entry.get()
             port = self.__get_selected_port()
-            print(f"python3 -m http.server {port} --directory {directory}")
+            print(f"python3 -m http.server {port}")
+            print(f"Running in directory: {directory}")
             # Change to the directory...
             subprocess.run(["cd", directory], shell=True, check=True)
             # Start the web server...   --> https://stackoverflow.com/questions/3516007/run-process-and-dont-wait
             #                           --> https://www.cyberciti.biz/faq/python-execute-unix-linux-command-examples/
             #                           --> https://www.aeracode.org/2018/02/19/python-async-simplified/
 
-            # web_server_process = subprocess.Popen(['python3', '-m', 'http.server', str(port)],
-            #                          stdin=None,
-            #                          stdout=None,
-            #                          stderr=None,
-            #                          close_fds=True)
-            # print(web_server_process.pid)
-
-            # global thread_event_handler
             self.__thread_event_handler = threading.Thread(target=self.__execute_server, args=(port, directory))
             self.__thread_event_handler.start()
         except ValueError as e:
@@ -186,13 +164,20 @@ class MainWindow(Frame):
 
             return port
 
-    def __reset_start_button(self):
-        self.__start_button_text.set("Start Web Server")
-        self.__start_button.configure(command=self.__start_server)
+    def __reset_start_button_to_start_mode(self, start):
+        """
+        The method resets the start button to the desired state, either to start the server or to stop the server.
+        :param start: True for setting the button to start the server. False to setup the button for stopping the server.
+        """
+        if start is True:
+            self.__start_button_text.set("Start Web Server")
+            self.__start_button.configure(command=self.__start_server)
+        else: #Stop
+            self.__start_button_text.set("Stop Web Server")
+            self.__start_button.configure(command=self.__stop_server)
 
     def __stop_server(self):
-        self.__reset_start_button()
-
+        self.__reset_start_button_to_start_mode(True)
         # https://www.reddit.com/r/learnpython/comments/52scfk/what_is_the_difference_between_popens_terminate/d7mx12b/
         self.__web_server_process.kill()
         # https://askubuntu.com/a/427222/227301
@@ -201,6 +186,8 @@ class MainWindow(Frame):
         # Close subprocess' file descriptors.
         self.__web_server_process.stdout.close()
         self.__web_server_process.stderr.close()
+
+        print("Server stopped!")
 
     def __execute_server(self, port, directory):
         # Change to the http path to serve: https://stackoverflow.com/a/39801780/1866109
@@ -214,21 +201,20 @@ class MainWindow(Frame):
                                               stdout=subprocess.PIPE,
                                               stderr=subprocess.PIPE,
                                               close_fds=True)
-        print(self.__web_server_process.pid)
+        # print(f"The server is running in the PID={self.__web_server_process.pid}")
+
         # Start the threads that reads from the pipes...
         thread_read_stdout = threading.Thread(target=self.__read_stdout, args=(self.__web_server_process, self.__show_text))
         thread_read_stderr = threading.Thread(target=self.__read_stderr, args=(self.__web_server_process, self.__show_text))
         thread_read_stdout.start()
         thread_read_stderr.start()
-        print("After starting the threads")
+
         thread_read_stdout.join()
         thread_read_stderr.join()
-        print("After joining")
 
     def __read_stdout(self, child_process, call_back):
         while child_process.poll() is None:
             out_stdout = child_process.stdout.readline()
-            # print("I am in stdout")
             if out_stdout != b'':
                 call_back(out_stdout, True)
                 # print(out_stdout.decode(sys.stdout.encoding))
@@ -238,7 +224,6 @@ class MainWindow(Frame):
     def __read_stderr(self, child_process, call_back):
         while child_process.poll() is None:
             out_stderr = child_process.stderr.readline()
-            # print("I am in stderr")
             if out_stderr != b'':
                 call_back(out_stderr, False)
                 # print(out_stderr.decode(sys.stderr.encoding))
@@ -248,17 +233,7 @@ class MainWindow(Frame):
     def __show_text(self, line, is_stdout):
         self.__console_text.config(state='normal')
         if is_stdout is True:
-            # print("is stdout")
             self.__console_text.insert('end', line)
         else:  # is stderr
-            # TODO: Add here your syntax higlighter for stderr
-            # print("is stderr")
             self.__console_text.insert('end', line, 'error')
 
-        #self.__console_text.config(state='disabled')
-
-    # def print_stdout(line):
-    #     print(f"STDOUT:{line}")
-    #
-    # def print_stderr(line):
-    #     print(f"STDERR:{line}")
