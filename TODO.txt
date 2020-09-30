@@ -43,6 +43,7 @@ pyserver02.py
     2.3- Text area:
         2.3.1- Horizontal scrollbar
         2.3.2- Syntax highlighting in case stderr, show the messages in Red
+            https://tkdocs.com/tutorial/text.html#tags
             https://stackoverflow.com/questions/14786507/how-to-change-the-color-of-certain-words-in-the-tkinter-text-widget
             https://stackoverflow.com/questions/3781670/how-to-highlight-text-in-a-tkinter-text-widget
             https://stackoverflow.com/questions/14824163/how-to-get-the-input-from-the-tkinter-text-widget
@@ -50,14 +51,16 @@ pyserver02.py
             https://stackoverflow.com/questions/29688831/pygments-syntax-highlighter-in-python-tkinter-text-widget
 3-Disable the standard output if no option is given in the parameters
 4-Show a nice icon in the docking (like any other application that is running)
-    <div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-
+    4.1- Give credit for the icon somehow. Icon downloaded from: https://www.flaticon.com/free-icon/server-cloud_31988
+        <div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 
     X- Takeaways
         X- Write code example on how to build a window with Tkinter
-        X- Write code example on how to build a window with Tkinter inheriting from Frame
+        X- Write code example on how to place the window in the screen
+            https://stackoverflow.com/questions/31797063/how-to-move-the-entire-window-to-a-place-on-the-screen-tkinter-python3
         X- How to add an icon to the window in the system tray (pyserver02.py)
             https://www.geeksforgeeks.org/iconphoto-method-in-tkinter-python/
+        X- Write code example on how to build a window with Tkinter inheriting from Frame
         X- Write code example on how to open a new window from another window using Toplevel (ProgressBarWindow, PortsWindow)
         X- Write code example on how to close a window / Frame / Toplevel
             https://stackoverflow.com/questions/54245012/how-to-only-close-toplevel-window-in-python-tkinter
@@ -74,6 +77,9 @@ pyserver02.py
         X- Write an example of a progressbar (How to notify the progress)
             http://blog.acipo.com/python-threading-progress-indicators/
         X- Write an example of a progressbar with a heavy task on the background (background process)
+        X- Wirte an example of a text component with 2 scrollbars (MainWindow.py)
+            https://stackoverflow.com/questions/19646752/python-scrollbar-on-text-widget/19647325
+
 
 
 
