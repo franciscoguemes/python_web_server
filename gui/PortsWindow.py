@@ -1,6 +1,5 @@
 import tkinter
 from tkinter import Toplevel
-from tkinter import ttk
 
 
 class PortsWindow(Toplevel):
@@ -17,8 +16,6 @@ class PortsWindow(Toplevel):
     def __add_components(self, report):
         scrollbar = tkinter.Scrollbar(self)
         textarea = tkinter.Text(self)
-        # textarea = tkinter.Text(self, height=3, width=50)
-        # scrollbar.pack()
 
         # https://www.python-course.eu/tkinter_text_widget.php
         scrollbar.pack(side=tkinter.RIGHT, fill=tkinter.Y)
