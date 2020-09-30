@@ -36,11 +36,6 @@ pyserver01.py
 
 
 pyserver02.py
-1-Cleanup the code
-    1.1- Delete commented code
-    1.2- Add proper comments
-2-Finish the UI
-3-Disable the standard output if no option is given in the parameters
 4-Show a nice icon in the docking (like any other application that is running)
     4.1- Give credit for the icon somehow. Icon downloaded from: https://www.flaticon.com/free-icon/server-cloud_31988
         <div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
