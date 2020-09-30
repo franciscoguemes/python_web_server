@@ -186,6 +186,10 @@ class MainWindow(Frame):
             self.__start_button.configure(command=self.__stop_server)
 
     def __get_local_ip_address(self):
+        """
+        Returns the LAN network IP of the machine or if it can not get the LAN IP, then it returns the loopback IP.
+        :return: The IP address of the machine.
+        """
         localhost_ip = "127.0.0.1"
 
         ip_address = None
