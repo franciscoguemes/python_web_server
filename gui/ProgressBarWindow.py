@@ -1,11 +1,6 @@
 import tkinter
 from tkinter import Toplevel
 from tkinter import ttk
-from tkinter import messagebox
-import threading
-import time
-
-from utils.PortScanner import PortScanner
 
 
 class ProgressBarWindow(Toplevel):
