@@ -4,6 +4,7 @@ import sys
 import threading
 import time
 import tkinter
+import socket
 from tkinter import Frame
 from tkinter import filedialog
 
@@ -119,7 +120,8 @@ class MainWindow(Frame):
         self.__console_text.tag_configure("error", foreground="red")
 
         # Create scrollbars for the Text...
-        scrollbar_x = tkinter.Scrollbar(self.__console_text, command=self.__console_text.xview, orient=tkinter.HORIZONTAL)
+        scrollbar_x = tkinter.Scrollbar(self.__console_text, command=self.__console_text.xview,
+                                        orient=tkinter.HORIZONTAL)
         scrollbar_x.pack(side=tkinter.BOTTOM, fill=tkinter.X)
         self.__console_text.config(xscrollcommand=scrollbar_x.set)
         scrollbar_y = tkinter.Scrollbar(self.__console_text, command=self.__console_text.yview)
@@ -136,6 +138,13 @@ class MainWindow(Frame):
             port = self.__get_selected_port()
             print(f"python3 -m http.server {port}")
             print(f"Running in directory: {directory}")
+
+            # Show your IP address...
+            ip_address = self.__get_local_ip_address()
+            ip_address_message = f"Your current IP address is {ip_address}"
+            print(ip_address_message)
+            self.__insert_text(ip_address_message + "\n")
+
             # Change to the directory...
             subprocess.run(["cd", directory], shell=True, check=True)
             # Start the web server...   --> https://stackoverflow.com/questions/3516007/run-process-and-dont-wait
@@ -172,9 +181,26 @@ class MainWindow(Frame):
         if start is True:
             self.__start_button_text.set("Start Web Server")
             self.__start_button.configure(command=self.__start_server)
-        else: #Stop
+        else:  # Stop
             self.__start_button_text.set("Stop Web Server")
             self.__start_button.configure(command=self.__stop_server)
+
+    def __get_local_ip_address(self):
+        hostname = socket.gethostname()
+        ip_address = socket.gethostbyname(hostname)
+
+        if ip_address == "127.0.0.1" or ip_address == "127.0.1.1":
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.connect(("8.8.8.8", 80))
+            ip_address = s.getsockname()[0]
+            s.close()
+
+        return ip_address
+
+    def __insert_text(self, text):
+        self.__console_text.config(state='normal')
+        self.__console_text.insert('end', text)
+        self.__console_text.config(state='disabled')
 
     def __stop_server(self):
         self.__reset_start_button_to_start_mode(True)
@@ -187,7 +213,10 @@ class MainWindow(Frame):
         self.__web_server_process.stdout.close()
         self.__web_server_process.stderr.close()
 
-        print("Server stopped!")
+        # Notify that the server is stopped...
+        stop_message = "Server stopped!" + os.linesep
+        print(stop_message)
+        self.__insert_text(stop_message)
 
     def __execute_server(self, port, directory):
         # Change to the http path to serve: https://stackoverflow.com/a/39801780/1866109
@@ -197,15 +226,17 @@ class MainWindow(Frame):
         # The -u parameter is needed in order the http.server to not buffer the output: https://stackoverflow.com/a/43250818/1866109
         command = ['python3', '-u', '-m', 'http.server', str(port)]
         self.__web_server_process = subprocess.Popen(command,
-                                              stdin=None,
-                                              stdout=subprocess.PIPE,
-                                              stderr=subprocess.PIPE,
-                                              close_fds=True)
+                                                     stdin=None,
+                                                     stdout=subprocess.PIPE,
+                                                     stderr=subprocess.PIPE,
+                                                     close_fds=True)
         # print(f"The server is running in the PID={self.__web_server_process.pid}")
 
         # Start the threads that reads from the pipes...
-        thread_read_stdout = threading.Thread(target=self.__read_stdout, args=(self.__web_server_process, self.__show_text))
-        thread_read_stderr = threading.Thread(target=self.__read_stderr, args=(self.__web_server_process, self.__show_text))
+        thread_read_stdout = threading.Thread(target=self.__read_stdout,
+                                              args=(self.__web_server_process, self.__show_text))
+        thread_read_stderr = threading.Thread(target=self.__read_stderr,
+                                              args=(self.__web_server_process, self.__show_text))
         thread_read_stdout.start()
         thread_read_stderr.start()
 
@@ -236,4 +267,4 @@ class MainWindow(Frame):
             self.__console_text.insert('end', line)
         else:  # is stderr
             self.__console_text.insert('end', line, 'error')
-
+        self.__console_text.config(state='disabled')
