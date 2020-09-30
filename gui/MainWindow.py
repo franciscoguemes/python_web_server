@@ -128,7 +128,8 @@ class MainWindow(Frame):
         self.__console_text = tkinter.Text(self, bg='white', state='disabled', wrap='none')
         self.__console_text.place(x=45, y=212, width=648, height=317)
         self.__console_text.tag_config("error", foreground="red")
-        # self.__console_text.tag_configure("error", foreground="red")
+        self.__console_text.tag_configure("error", foreground="red")
+        # self.__console_text.tag_configure("highlightline", background='yellow', font='helvetica 14 bold', relief='raised')
 
         # Create scrollbars for the Text...
         scrollbar_x = tkinter.Scrollbar(self.__console_text, command=self.__console_text.xview, orient=tkinter.HORIZONTAL)
@@ -241,21 +242,18 @@ class MainWindow(Frame):
             if out_stderr != b'':
                 call_back(out_stderr, False)
                 # print(out_stderr.decode(sys.stderr.encoding))
-                sys.stdout.write(out_stderr.decode(sys.stderr.encoding))
-                sys.stdout.flush()
+                sys.stderr.write(out_stderr.decode(sys.stderr.encoding))
+                sys.stderr.flush()
 
     def __show_text(self, line, is_stdout):
         self.__console_text.config(state='normal')
-        # index = self.__console_text.index(tkinter.END)
-        # print(index)
         if is_stdout is True:
-            self.__console_text.insert(tkinter.END, line)
-            # self.__console_text.tag_remove("error", index, tkinter.END)
+            # print("is stdout")
+            self.__console_text.insert('end', line)
         else:  # is stderr
             # TODO: Add here your syntax higlighter for stderr
-            self.__console_text.insert(tkinter.END, line)
-            # self.__console_text.tag_add("error", "1.0", tkinter.END)
-            # self.__console_text.tag_add("error", index, tkinter.END)
+            # print("is stderr")
+            self.__console_text.insert('end', line, 'error')
 
         #self.__console_text.config(state='disabled')
 
