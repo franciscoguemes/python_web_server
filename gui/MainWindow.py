@@ -125,13 +125,19 @@ class MainWindow(Frame):
         # console_label = tkinter.Label(window,  anchor='nw', justify='left', bg='white', textvariable=output)
         # console_label.place(x=45, y=212, width=648, height=317)
 
-        self.__console_text = tkinter.Text(self, bg='white', state='disabled')
+        self.__console_text = tkinter.Text(self, bg='white', state='disabled', wrap='none')
         self.__console_text.place(x=45, y=212, width=648, height=317)
-        scrollbar = tkinter.Scrollbar(self.__console_text, command=self.__console_text.yview)
-        self.__console_text.config(yscrollcommand=scrollbar.set)
         self.__console_text.tag_config("error", foreground="red")
         # self.__console_text.tag_configure("error", foreground="red")
-        scrollbar.pack(side=tkinter.RIGHT, fill=tkinter.Y)
+
+        # Create scrollbars for the Text...
+        scrollbar_x = tkinter.Scrollbar(self.__console_text, command=self.__console_text.xview, orient=tkinter.HORIZONTAL)
+        scrollbar_x.pack(side=tkinter.BOTTOM, fill=tkinter.X)
+        self.__console_text.config(xscrollcommand=scrollbar_x.set)
+        scrollbar_y = tkinter.Scrollbar(self.__console_text, command=self.__console_text.yview)
+        scrollbar_y.pack(side=tkinter.RIGHT, fill=tkinter.Y)
+        self.__console_text.config(yscrollcommand=scrollbar_y.set)
+
 
     def __start_server(self):
         # Update start_button...
@@ -248,7 +254,7 @@ class MainWindow(Frame):
         else:  # is stderr
             # TODO: Add here your syntax higlighter for stderr
             self.__console_text.insert(tkinter.END, line)
-            self.__console_text.tag_add("error", "1.0", tkinter.END)
+            # self.__console_text.tag_add("error", "1.0", tkinter.END)
             # self.__console_text.tag_add("error", index, tkinter.END)
 
         #self.__console_text.config(state='disabled')
