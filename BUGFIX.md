@@ -35,4 +35,22 @@ app is located _/home/francisco/git/Francisco/github/python_web_server_, I am tr
 to execute the app from an external directory.
 
 ---- 
+## BUG-0002
+
+
+
+---- 
+## BUG-0003 
+
+
+
+---- 
+## BUG-0004 
+
+
+
+---- 
+## BUG-0005 
+
+
 
