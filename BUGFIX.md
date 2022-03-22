@@ -2,7 +2,7 @@
 This file contains a list of bugs to fix in the application
 
 ---- 
-## BUG__01 
+## BUG-0001 
 
 When the application is executed directly from its python file in a different directory than
 the directory where the application resides, then there is an error regarding the icon.
